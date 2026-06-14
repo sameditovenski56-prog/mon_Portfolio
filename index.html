@@ -162,10 +162,17 @@
         </div>
       </div>
 
-      <!-- Formulaire -->
+     <!-- Formulaire -->
       <div class="contact-form-wrap">
         <h3 class="contact-sub">Envoyer un message</h3>
-        <form class="contact-form" action="https://formspree.io/f/xkoakark" method="POST">
+
+        <!-- Message de succès (caché par défaut) -->
+        <div class="form-success" id="formSuccess">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-2 14.5-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8Z"/></svg>
+          <p>Message envoyé avec succès !<br>Je vous répondrai dès que possible.</p>
+        </div>
+
+        <form class="contact-form" id="contactForm">
           <div class="form-group">
             <label for="nom">Nom complet</label>
             <input type="text" id="nom" name="Nom" placeholder="Votre nom" required />
@@ -182,18 +189,50 @@
             <label for="message">Message</label>
             <textarea id="message" name="Message" rows="5" placeholder="Votre message..." required></textarea>
           </div>
-          <button type="submit" class="form-btn">Envoyer le message</button>
+          <button type="submit" class="form-btn" id="formBtn">Envoyer le message</button>
         </form>
       </div>
-
     </div>
   </section>
-
 </main>
 
 <footer>
   <p>&copy; 2026 <span>Samedi Thovensky.</span> Tous droits réservés.</p>
 </footer>
+
+<script>
+  const form = document.getElementById('contactForm');
+  const btn  = document.getElementById('formBtn');
+  const success = document.getElementById('formSuccess');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    btn.textContent = 'Envoi en cours...';
+    btn.disabled = true;
+
+    const data = new FormData(form);
+
+    fetch('https://formspree.io/f/xkoakark', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(response) {
+      if (response.ok) {
+        form.style.display = 'none';
+        success.style.display = 'flex';
+      } else {
+        btn.textContent = 'Erreur — Réessayer';
+        btn.disabled = false;
+      }
+    })
+    .catch(function() {
+      btn.textContent = 'Erreur — Réessayer';
+      btn.disabled = false;
+    });
+  });
+</script>
 
 </body>
 </html>
