@@ -17,7 +17,6 @@
     <p class="hero-title">Étudiant en Sciences Informatiques</p>
     <div class="gold-bar"></div>
 
-    <!-- SOCIAL ICONS -->
     <div class="social-strip">
       <a href="https://www.linkedin.com/in/thovensky-samedi-37b523398?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" aria-label="LinkedIn" class="social-link">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.36 4.26 5.43v6.31ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.28V1.72C24 .77 23.2 0 22.22 0Z"/></svg>
@@ -33,11 +32,17 @@
       </a>
     </div>
   </div>
-  <nav class="nav-strip">
-    <a href="#apropos">À propos</a>
-    <a href="#competences">Compétences</a>
-    <a href="#projets">Projets</a>
-    <a href="#contact">Contact</a>
+
+  <!-- HAMBURGER BUTTON -->
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="nav-strip" id="navStrip">
+    <a href="#apropos" class="nav-link">À propos</a>
+    <a href="#competences" class="nav-link">Compétences</a>
+    <a href="#projets" class="nav-link">Projets</a>
+    <a href="#contact" class="nav-link">Contact</a>
   </nav>
 </header>
 
@@ -119,7 +124,6 @@
 
     <div class="contact-grid">
 
-      <!-- Infos directes -->
       <div class="contact-info">
         <h3 class="contact-sub">Informations directes</h3>
 
@@ -162,14 +166,14 @@
         </div>
       </div>
 
-     <!-- Formulaire -->
+      <!-- Formulaire -->
       <div class="contact-form-wrap">
         <h3 class="contact-sub">Envoyer un message</h3>
 
-        <!-- Message de succès (caché par défaut) -->
+        <!-- Notification succès (bandeau, pas de remplacement) -->
         <div class="form-success" id="formSuccess">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-2 14.5-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8Z"/></svg>
-          <p>Message envoyé avec succès !<br>Je vous répondrai dès que possible.</p>
+          <p>Message envoyé avec succès ! Je vous répondrai dès que possible.</p>
         </div>
 
         <form class="contact-form" id="contactForm">
@@ -192,17 +196,46 @@
           <button type="submit" class="form-btn" id="formBtn">Envoyer le message</button>
         </form>
       </div>
+
     </div>
   </section>
+
 </main>
 
 <footer>
   <p>&copy; 2026 <span>Samedi Thovensky.</span> Tous droits réservés.</p>
 </footer>
 
+
+<!-- Toast notification -->
+<div class="form-toast" id="formToast">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-2 14.5-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8Z"/></svg>
+  Message envoyé avec succès !
+</div>
+
 <script>
-  const form = document.getElementById('contactForm');
-  const btn  = document.getElementById('formBtn');
+  // ── HAMBURGER ──
+  const hamburger = document.getElementById('hamburger');
+  const navStrip  = document.getElementById('navStrip');
+
+  hamburger.addEventListener('click', function() {
+    const open = navStrip.classList.toggle('open');
+    hamburger.classList.toggle('active', open);
+    hamburger.setAttribute('aria-expanded', open);
+  });
+
+  // Fermer le menu quand on clique sur un lien
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navStrip.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', false);
+    });
+  });
+
+  // ── FORMULAIRE ──
+  const form    = document.getElementById('contactForm');
+  const btn     = document.getElementById('formBtn');
   const success = document.getElementById('formSuccess');
 
   form.addEventListener('submit', function(e) {
@@ -220,8 +253,18 @@
     })
     .then(function(response) {
       if (response.ok) {
-        form.style.display = 'none';
+        // Afficher le bandeau vert AU-DESSUS du formulaire sans le cacher
         success.style.display = 'flex';
+        // Réinitialiser le formulaire et le bouton
+        form.reset();
+        btn.textContent = 'Envoyer le message';
+        btn.disabled = false;
+        // Faire défiler vers le bandeau
+        success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Cacher le bandeau après 5 secondes
+        setTimeout(function() {
+          success.style.display = 'none';
+        }, 5000);
       } else {
         btn.textContent = 'Erreur — Réessayer';
         btn.disabled = false;
